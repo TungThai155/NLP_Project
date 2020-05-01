@@ -39,7 +39,17 @@ def most_informative_feature(vectorizer, classifier, n=10):
     print("Important REAL news features")
     for coef, feat in reversed(class2): #reversed order
         print(class_labels[1], feat)
-
+# scorer function
+def scorer(confusion_m):
+    tn, fp, fn, tp = confusion_m.ravel()
+    precision = tp/(tp+fp)
+    recall = tp/(tp+fn)
+    f1_score = (2*precision*recall)/(precision+recall)
+    print("Precision is: %0.3f" % precision)
+    print("Recall is: %0.3f" % recall)
+    print("F-1 Score is: %0.3f" % f1_score)
+    print()
+    
 ############ classification
 # knn model
 print("Result of K-NN model")
@@ -54,7 +64,7 @@ knn_max_index = np.argmax(knn_matrix_score) + 2 # neighbor array start from 2
 print ("Best number of neighbors is: %d" % knn_max_index)
 print("Best accuracy of K-NN:   %0.3f" % knn_matrix_score[knn_max_index - 2]) #deduct two print out the right number
 cm_knn = metrics.confusion_matrix(y_test, pred_knn, labels=['FAKE', 'REAL'])
-print(cm_knn)
+scorer(cm_knn)
 
 # rf model
 print("Result of Random Forest model")
@@ -69,7 +79,7 @@ rf_max_index = np.argmax(rf_matrix_score) + 2 # neighbor array start from 2
 print ("Best number of max_depth is: %d" % rf_max_index) 
 print("Best accuracy of RF:   %0.3f" % rf_matrix_score[rf_max_index - 2])
 cm_rf = metrics.confusion_matrix(y_test, pred_rf, labels=['FAKE', 'REAL'])
-print(cm_rf)
+scorer(cm_rf)
 
 # nn model
 print("Result of MLP Neural Net model")
@@ -79,7 +89,7 @@ pred_nn = nn_model.predict(tfidf_test)
 nn_score = metrics.accuracy_score(y_test, pred_nn)
 print("Accuracy of Multi-layer Perceptron NN:   %0.3f" % nn_score)
 cm_nn = metrics.confusion_matrix(y_test, pred_nn, labels=['FAKE', 'REAL'])
-print(cm_nn)
+scorer(cm_nn)
 
 ########### features
 # svm model
@@ -88,9 +98,9 @@ svm_model = LinearSVC(random_state=0, tol=1e-5)
 svm_model.fit(tfidf_train, y_train)
 pred_svm = svm_model.predict(tfidf_test)
 svm_score = metrics.accuracy_score(y_test, pred_svm)
-print("accuracy:   %0.3f" % svm_score)
+print("Accuracy of Linear SVM:   %0.3f" % svm_score)
 cm_svm = metrics.confusion_matrix(y_test, pred_svm, labels=['FAKE', 'REAL'])
-print(cm_svm)
+scorer(cm_svm)
 most_informative_feature(tfidf_vectorizer, svm_model)
 
 # Logistic Regression
@@ -100,7 +110,5 @@ pred_log = log_reg.predict(tfidf_test)
 log_score = metrics.accuracy_score(y_test, pred_log)
 print("Logistic Regression accuracy:   %0.3f" % log_score)
 log_cm = metrics.confusion_matrix(y_test, pred_log, labels=['FAKE', 'REAL'])
-print(log_cm)
+scorer(log_cm)
 most_informative_feature(tfidf_vectorizer, log_reg)
-
-
