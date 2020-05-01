@@ -104,6 +104,7 @@ scorer(cm_svm)
 most_informative_feature(tfidf_vectorizer, svm_model)
 
 # Logistic Regression
+print("Result of Logistic Regression model")
 log_reg = LogisticRegression(random_state=0)
 log_reg.fit(tfidf_train, y_train)
 pred_log = log_reg.predict(tfidf_test)
